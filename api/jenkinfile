@@ -1,0 +1,35 @@
+pipeline {
+    agent {
+    node {
+      label 'worker1'
+       }   
+    }
+    environment {
+    dockerhub=credentials('Docker') 
+    }
+
+    stages {
+        stage('Docker Build') {
+            steps {
+                sh 'cd api && docker build -t hanitha342/lms.be2 .'
+            }
+        }
+        stage('Docker Login') {
+            steps {
+                sh 'echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-st
+din'
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                sh 'docker push hanitha342/lms.be2'
+                sh 'docker container run -dt --name api -p 3000:3000 hanitha342/lms.be2'
+            }
+        }
+        stage('creating database container') {
+            steps {
+            sh 'docker container run --name lms-db-postgres -e POSTGRES_PASSWORD=VeDi@010685 postgres'
+    }
+}
+
+}}
